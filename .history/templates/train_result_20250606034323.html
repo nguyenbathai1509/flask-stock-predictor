@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Kết quả huấn luyện</title></head>
+<body>
+    <h2>Kết quả huấn luyện</h2>
+    <p>Train Score: {{ train_score }}</p>
+    <p>Test Score: {{ test_score }}</p>
+    <p>RMSE: {{ rmse }}</p>
+    <a href="/predict">Chuyển đến trang dự đoán</a>
+
+    <h2>Biểu đồ tương tác:</h2>
+    <h3>1. Giá mở cửa và giá đóng cửa</h3>
+    {{ plot1|safe }}
+
+    <h3>2. Giá trần và giá đóng cửa</h3>
+    {{ plot2|safe }}
+
+    <h3>3. Giá sàn và giá đóng cửa</h3>
+    {{ plot3|safe }}
+
+    <h3>4. Khối lượng giao dịch và giá đóng cửa</h3>
+    {{ plot4|safe }}
+
+    <h3>5. Dự đoán giá vs Thực tế (có đường LOWESS)</h3>
+    {{ plot5|safe }}
+</body>
+</html>

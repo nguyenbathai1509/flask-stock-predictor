@@ -1,0 +1,17 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Tải dữ liệu & Huấn luyện</title></head>
+<body>
+    <h2>Tải dữ liệu CSV và nhập tham số</h2>
+    <form method="POST" action="/train" enctype="multipart/form-data">
+        <label>Chọn file CSV:</label>
+        <input type="file" name="datafile" required><br>
+        <label>test_size:</label>
+        <input type="text" name="test_size" value="0.2"><br>
+        <label>random_state:</label>
+        <input type="text" name="random_state" value="42"><br>
+        <button type="submit">Huấn luyện mô hình</button>
+    </form>
+</body>
+</html>

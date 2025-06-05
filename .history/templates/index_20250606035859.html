@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tải dữ liệu & Huấn luyện</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Tùy chỉnh CSS -->
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            padding-top: 2rem;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .header-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d3e2;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-submit {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            background-color: #17a673;
+            transform: translateY(-2px);
+        }
+        
+        .file-upload-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #d1d3e2;
+            border-radius: 0.5rem;
+            background-color: #f8f9fc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .file-upload-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+        
+        .progress-container {
+            display: none;
+            margin-top: 1.5rem;
+        }
+        
+        .back-btn {
+            background-color: white;
+            color: var(--dark-color);
+            border: 1px solid #d1d3e2;
+        }
+        
+        .back-btn:hover {
+            background-color: #f8f9fc;
+            color: var(--dark-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container col-lg-8 col-xl-6">
+        <div class="header-card text-center animate__animated animate__fadeIn">
+            <h1><i class="fas fa-upload me-2"></i> Tải dữ liệu & Huấn luyện</h1>
+            <p class="lead mt-3">Tải lên tập dữ liệu CSV và cấu hình tham số huấn luyện</p>
+        </div>
+
+        <div class="form-container animate__animated animate__fadeInUp">
+            <form method="POST" action="/train" enctype="multipart/form-data" id="trainForm">
+                <!-- File Upload -->
+                <div class="mb-4">
+                    <label class="form-label mb-3">Chọn file dữ liệu CSV</label>
+                    <div class="file-upload-wrapper">
+                        <label class="file-upload-label" id="fileUploadLabel">
+                            <div class="text-center">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-file-csv"></i>
+                                </div>
+                                <div>Kéo thả file vào đây hoặc click để chọn</div>
+                                <div class="text-muted small mt-2">Hỗ trợ định dạng .csv (tối đa 10MB)</div>
+                            </div>
+                            <input type="file" name="datafile" class="file-upload-input" id="fileInput" accept=".csv" required>
+                        </label>
+                        <div class="file-name" id="fileName">Chưa có file nào được chọn</div>
+                    </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="testSize" class="form-label">Tỷ lệ dữ liệu kiểm tra (test_size)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                            <input type="number" name="test_size" id="testSize" class="form-control" 
+                                   min="0.1" max="1" step="0.05" value="0.2" required>
+                        </div>
+                        <div class="form-text">Giá trị từ 0.1 đến 1</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="randomState" class="form-label">Random state</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-random"></i></span>
+                            <input type="number" name="random_state" id="randomState" class="form-control" 
+                                   min="0" value="42" required>
+                        </div>
+                        <div class="form-text">Số nguyên bất kỳ</div>
+                    </div>
+                </div>
+
+                <!-- Model Selection -->
+                <div class="mb-4">
+                    <label class="form-label">Chọn mô hình</label>
+                    <select class="form-select" name="model_type">
+                        <option value="linear">Hồi quy tuyến tính</option>
+                    </select>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Đang xử lý...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-4">
+                    <a href="/" class="btn btn-back btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-submit btn-lg px-4">
+                        <i class="fas fa-cogs me-2"></i>Bắt đầu huấn luyện
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function() {
+            // File upload display
+            $('#fileInput').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    $('#fileName').html(`<i class="fas fa-check-circle text-success me-2"></i>${file.name} (${formatFileSize(file.size)})`);
+                    $('#fileUploadLabel').css('border-color', '#1cc88a');
+                } else {
+                    $('#fileName').text('Chưa có file nào được chọn');
+                    $('#fileUploadLabel').css('border-color', '#d1d3e2');
+                }
+            });
+            
+            // Drag and drop
+            $('#fileUploadLabel').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', var(--primary-color));
+                $(this).css('background-color', 'rgba(78, 115, 223, 0.1)');
+            });
+            
+            $('#fileUploadLabel').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#d1d3e2');
+                $(this).css('background-color', '#f8f9fc');
+            });
+            
+            $('#fileUploadLabel').on('drop', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#d1d3e2');
+                $(this).css('background-color', '#f8f9fc');
+                const file = e.originalEvent.dataTransfer.files[0];
+                if (file && file.name.endsWith('.csv')) {
+                    $('#fileInput')[0].files = e.originalEvent.dataTransfer.files;
+                    $('#fileName').html(`<i class="fas fa-check-circle text-success me-2"></i>${file.name} (${formatFileSize(file.size)})`);
+                } else {
+                    alert('Vui lòng chọn file CSV');
+                }
+            });
+            
+            // Form submission
+            $('#trainForm').submit(function(e) {
+                // Validate file size
+                const file = $('#fileInput')[0].files[0];
+                if (file && file.size > 10 * 1024 * 1024) { // 10MB
+                    alert('File quá lớn. Kích thước tối đa là 10MB');
+                    return false;
+                }
+                
+                // Show progress
+                $('#progressContainer').fadeIn();
+                simulateProgress();
+                
+                return true;
+            });
+            
+            // Helper functions
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function simulateProgress() {
+                let progress = 0;
+                const interval = setInterval(function() {
+                    progress += Math.random() * 10;
+                    if (progress >= 90) clearInterval(interval);
+                    $('#progressBar').css('width', progress + '%');
+                    $('#progressPercent').text(Math.round(progress) + '%');
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

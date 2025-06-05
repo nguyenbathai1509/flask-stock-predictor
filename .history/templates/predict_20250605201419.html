@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Dự đoán</title></head>
+<body>
+    <h2>Dự đoán giá cổ phiếu</h2>
+    <form method="POST">
+        <label>Open:</label><input name="Open"><br>
+        <label>High:</label><input name="High"><br>
+        <label>Low:</label><input name="Low"><br>
+        <label>Volume:</label><input name="Volume"><br>
+        <button type="submit">Dự đoán</button>
+    </form>
+    {% if prediction %}
+        <p>Giá cổ phiếu dự đoán: <strong>{{ prediction }}</strong></p>
+    {% endif %}
+</body>
+</html>

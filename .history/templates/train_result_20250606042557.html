@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết quả huấn luyện</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Tùy chỉnh CSS -->
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            padding-top: 2rem;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .plot-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .plot-card:hover {
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.25);
+        }
+        
+        .plot-card h5 {
+            color: var(--dark-color);
+            border-bottom: 1px solid #e3e6f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .badge-metric {
+            font-size: 0.9rem;
+            padding: 0.5em 0.8em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header text-center animate__animated animate__fadeIn">
+        <h1><i class="fas fa-chart-line me-2"></i> Kết quả huấn luyện mô hình</h1>
+        <p class="lead mt-3">Phân tích hiệu suất và dự đoán giá cổ phiếu</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="metric-card">
+                <h5><i class="fas fa-graduation-cap me-2"></i>Train Score</h5>
+                <div class="metric-value">{{ train_score }}</div>
+                <span class="badge bg-primary badge-metric mt-2">Độ phù hợp tập huấn luyện</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="metric-card">
+                <h5><i class="fas fa-vial me-2"></i>Test Score</h5>
+                <div class="metric-value">{{ test_score }}</div>
+                <span class="badge bg-success badge-metric mt-2">Độ phù hợp tập kiểm tra</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="metric-card">
+                <h5><i class="fas fa-bullseye me-2"></i>RMSE</h5>
+                <div class="metric-value">{{ rmse }}</div>
+                <span class="badge bg-info badge-metric mt-2">Sai số trung bình</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mb-4">
+        <a href="/predict" class="btn btn-success btn-lg me-3 animate__animated animate__pulse animate__infinite">
+            <i class="fas fa-rocket me-2"></i>Chuyển đến trang dự đoán
+        </a>
+        <a href="/" class="btn btn-outline-secondary btn-lg">
+            <i class="fas fa-home me-2"></i>Quay lại trang chính
+        </a>
+    </div>
+
+    <h2 class="mt-5 mb-4"><i class="fas fa-chart-pie me-2"></i> Biểu đồ phân tích</h2>
+
+    <!-- Plot 1 -->
+    <div class="plot-card animate__animated animate__fadeInUp">
+        <h5><i class="fas fa-chart-bar me-2"></i> Giá mở cửa và giá đóng cửa</h5>
+        <div class="plot-container">
+            {{ plot1|safe }}
+        </div>
+    </div>
+
+    <!-- Plot 2 -->
+    <div class="plot-card animate__animated animate__fadeInUp">
+        <h5><i class="fas fa-chart-line me-2"></i> Giá trần và giá đóng cửa</h5>
+        <div class="plot-container">
+            {{ plot2|safe }}
+        </div>
+    </div>
+
+    <!-- Plot 3 -->
+    <div class="plot-card animate__animated animate__fadeInUp">
+        <h5><i class="fas fa-chart-area me-2"></i> Giá sàn và giá đóng cửa</h5>
+        <div class="plot-container">
+            {{ plot3|safe }}
+        </div>
+    </div>
+
+    <!-- Plot 4 -->
+    <div class="plot-card animate__animated animate__fadeInUp">
+        <h5><i class="fas fa-weight me-2"></i> Khối lượng giao dịch và giá đóng cửa</h5>
+        <div class="plot-container">
+            {{ plot4|safe }}
+        </div>
+    </div>
+
+    <!-- Plot 5 -->
+    <div class="plot-card animate__animated animate__fadeInUp">
+        <h5><i class="fas fa-project-diagram me-2"></i> Dự đoán giá vs Thực tế (LOWESS)</h5>
+        <div class="plot-container">
+            {{ plot5|safe }}
+        </div>
+    </div>
+
+    <a href="#" class="btn btn-primary floating-btn rounded-circle" title="Lên đầu trang">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Custom JS -->
+<script>
+    $(document).ready(function() {
+        // Smooth scroll to top
+        $(".floating-btn").click(function(e) {
+            e.preventDefault();
+            $("html, body").animate({scrollTop: 0}, 800);
+        });
+        
+        // Add animation when scrolling
+        $(window).scroll(function() {
+            $('.plot-card').each(function() {
+                var cardTop = $(this).offset().top;
+                var windowTop = $(window).scrollTop() + $(window).height();
+                
+                if (cardTop < windowTop) {
+                    $(this).addClass('animate__fadeInUp');
+                }
+            });
+        });
+        
+        // Tooltip initialization
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+</body>
+</html>
